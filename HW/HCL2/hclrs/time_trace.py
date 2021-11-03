@@ -66,27 +66,21 @@ def count_time_in(args, fh):
         
         if instruction['is_conditional_branch'] == 'Y' and pc in previous_branches:
             # if this pc instruction has been executed previously
-            if previous_branches.get(pc) == 'branch_taken':
+            if previous_branches.get(pc) == 'Y':
                 # predict branch to be taken
                 if instruction['branch_taken'] == 'N':
                     branch_delay += args.branch_delay
-                    # update value in dictionary and apply delay
-                    previous_branches[pc] = 'branch_not_taken'
             else:
                 # predict branch not to be taken
                 if instruction['branch_taken'] == 'Y':
                     branch_delay += args.branch_delay
-                    # update value in dictionary and apply delay
-                    previous_branches[pc] = 'branch_taken'
-        else:
+            previous_branches[pc] = instruction['branch_taken']
+        elif instruction['is_conditional_branch'] == 'Y' and pc not in previous_branches:
             # if this pc instruction has not been executed previously, predict branch to be taken
             if instruction['branch_taken'] == 'N':
                 branch_delay += args.branch_delay
-                # put key:value in dictionary and apply delay
-                previous_branches[pc] = 'branch_not_taken'
-            else:
-                # put key:value in dictionary
-                previous_branches[pc] = 'branch_taken'
+            previous_branches[pc] = instruction['branch_taken']
+
         last_instruction = instruction
         num_instructions += 1
 
